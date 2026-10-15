@@ -84,8 +84,10 @@ class FixtureTests(unittest.TestCase):
         doc = Policy.parse(text)
         self.assertEqual(doc.get("policy_type", "permanent"), "Yes")
         self.assertEqual(doc.get("mtk-skin-control", "target_tpcb"), "46000")
-        self.assertEqual(doc.require_section("charger-cooler").get_ints("current"),
-                         [3000, 3000, 3000, 3000, 1000])
+        self.assertEqual(
+            doc.require_section("charger-cooler").get_ints("current"),
+            [3000, 3000, 3000, 3000, 1000],
+        )
 
     def test_as_dict(self):
         doc = Policy.parse((DATA / "sample_plaintext.conf").read_text())

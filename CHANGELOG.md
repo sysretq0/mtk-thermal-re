@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-15
+
+### Added
+
+- **Thermal HAL toolkit**: `mtk_thermal_re.hal` and the `hal-info` / `hal-patch`
+  CLI commands inspect and rewrite the compiled-in threshold table of
+  `android.hardware.thermal@2.0-impl.so` — the per-`TemperatureType` hot
+  thresholds the Android framework reads through the HAL.
+- Guarded patcher: refuses non-reference images (build-id + size) unless
+  `--force`, rejects non-monotonic/`NaN` values, and refuses to make a shared
+  `.rodata` word hold two values.
+- Bundled `sysretq0-hot` HAL profile (CPU/GPU/NPU severity onset +10 °C) that
+  changes only **3 bytes** and leaves the SHUTDOWN slot, BATTERY,
+  POWER_AMPLIFIER, SKIN and all kernel/`thermal_core` rails untouched.
+- `docs/hal.md`: the HAL data path, the decoded threshold table, what is
+  runtime-tunable (SKIN via `thermal_core`) vs compiled-in, and apply/rollback.
+
+### Changed
+
+- Documentation, CLI help text and source comments were rewritten in a uniform
+  technical register.
+
 ## [1.1.0] - 2026-10-15
 
 ### Added
@@ -62,10 +84,11 @@ Initial release: the full reverse-engineering result plus a packaged toolkit.
   documented.
 - The loader treats a policy whose first line is exactly `[policy_type]` as
   plaintext — the primary, no-rebuild tuning path.
-- File resolution order `/data/vendor/thermal/` → `/vendor/etc/thermal/`, with
+- File resolution order `/data/vendor/thermal/` -> `/vendor/etc/thermal/`, with
   `.current_tp` / `.permanent_tp` persistence.
 - Socket command set: `apply`, `mtbf_mode`, `md_off`, `debug_log`, `frs`.
 
-[Unreleased]: https://github.com/sysretq0/mtk-thermal-re/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/sysretq0/mtk-thermal-re/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/sysretq0/mtk-thermal-re/releases/tag/v1.2.0
 [1.1.0]: https://github.com/sysretq0/mtk-thermal-re/releases/tag/v1.1.0
 [1.0.0]: https://github.com/sysretq0/mtk-thermal-re/releases/tag/v1.0.0

@@ -1,12 +1,12 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 # Tuning guide
 
-> ⚠️ **Read this first.** Thermal limits exist to protect the SoC, battery and
-> enclosure. Loosening them can cause throttling instability, battery swelling,
-> accelerated ageing or permanent hardware damage. Change one value at a time,
-> watch `/sys/class/thermal/thermal_zone*/temp` and `logcat -s thermal_core`, and
-> always keep a known-good policy to fall back to. Only tune devices you own or
-> are authorised to modify.
+> **Warning.** Thermal limits exist to protect the SoC, battery and enclosure.
+> Loosening them can cause throttling instability, battery swelling, accelerated
+> ageing or permanent hardware damage. Change one value at a time, monitor
+> `/sys/class/thermal/thermal_zone*/temp` and `logcat -s thermal_core`, and always
+> keep a known-good policy to fall back to. Tune only devices you own or are
+> authorised to modify.
 
 ## Where policies live
 
@@ -69,7 +69,7 @@ In `[mtk-skin-control]`, lowering the PCB targets makes ATC start throttling
 earlier:
 
 ```
-target_tpcb= 44000      # was 46000  (lower ⇒ throttle earlier/colder)
+target_tpcb= 44000      # was 46000  (lower => throttle earlier/colder)
 trip_tpcb=   41000      # was 43000
 ```
 
@@ -112,7 +112,7 @@ All under `examples/`, each with a `.conf.enc` obfuscated twin:
 
 | profile | change | notes |
 |---|---|---|
-| `sysretq0_hot.conf` | **+5.0 °C** on `target_tpcb`/`trip_tpcb`/`min_target_tj`, `severe` +5 °C | runs **hot** but pinned to the vendor's own hottest shipped values; hard rails untouched |
+| `sysretq0_hot.conf` | **+5.0 °C** on `target_tpcb`/`trip_tpcb`/`min_target_tj`, `severe` +5 °C | runs hotter but remains pinned to the vendor's own hottest shipped values; hard rails untouched |
 | `thermal_performant.conf` | `target_tpcb`/`trip_tpcb` +7 °C, HAL raised | more headroom, runs hottest of the three |
 | `thermal_cool.conf` | targets lowered, HAL lowered | trade performance for lower temperatures |
 

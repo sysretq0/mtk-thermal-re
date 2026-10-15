@@ -30,7 +30,7 @@ current= [3000, 3000, 3000, 3000, 1000]
 
 `exe_change_policy(name)` (`0x8940`):
 
-1. If MTBF mode is locked and `name != thermal_mtbf.conf` → refuse.
+1. If MTBF mode is locked and `name != thermal_mtbf.conf`, refuse.
 2. Optional `*_infob.<ext>` variant is preferred when present in
    `/vendor/etc/thermal/`.
 3. Search **`/data/vendor/thermal/<name>`** first, then
@@ -67,7 +67,7 @@ mtk-thermal-re schema mtk-skin-control
 
 ### Highlights
 
-**`[mtk-skin-control]`** — the Adaptive Thermal Control (ATC) brain.
+**`[mtk-skin-control]`** — the Adaptive Thermal Control (ATC) controller.
 `target_tpcb` is written to `/sys/kernel/thermal/target_tpcb`; `set_ttj`
 (`0x2120c`) programs the junction-temperature target into `/sys/kernel/thermal/ttj`
 and reprograms trip points.
@@ -77,15 +77,16 @@ and reprograms trip points.
 | `sensor` | temperature sensor (e.g. `ap_ntc`) |
 | `max_target_tj`, `min_target_tj` | junction-temperature window |
 | `trip_tpcb` | PCB trip temperature |
-| `target_tpcb` | PCB control target (lower ⇒ throttle earlier/colder) |
+| `target_tpcb` | PCB control target (lower => throttle earlier/colder) |
 | `atc_mode`, `atc_max_target_tj` | enable/clamp |
 | `clusterN_min_throttle_freq`, `gpu_min_throttle_freq` | frequency floors while cooling |
 
-**`[charger-cooler]`** — `threshold[]`/`hysteresis[]`/`current[]` → charge current
-limit per temperature band (written to `/sys/kernel/charger_cooler/charger_table`).
+**`[charger-cooler]`** — `threshold[]`/`hysteresis[]`/`current[]` define the charge
+current limit per temperature band (written to
+`/sys/kernel/charger_cooler/charger_table`).
 
-**`[backlight-cooler]`** — `threshold[]`/`hysteresis[]`/`reduce-brightness[]` → display
-brightness reduction (`lcd-backlight`).
+**`[backlight-cooler]`** — `threshold[]`/`hysteresis[]`/`reduce-brightness[]` define
+the display brightness reduction (`lcd-backlight`).
 
 **`[thermalhal-threshold]`** — `level= [severe, critical, emergency, shutdown]` and
 matching `threshold[]` reported to the Android thermal HAL.
@@ -101,4 +102,4 @@ modem/RF power back-off with `threshold[]`/`hysteresis[]`/`limit-state[]`.
 `max_target_tj = min_target_tj = 300000` and either
 `HW_protection= disabled` (calls `set_hw_reboot(0)`) or extreme HAL thresholds.
 
-See `docs/tuning-guide.md` for how to use these safely.
+See [tuning-guide.md](tuning-guide.md) for the safe way to use them.

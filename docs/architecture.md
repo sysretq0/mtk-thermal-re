@@ -20,6 +20,8 @@
 | `thermal_core` | the daemon | config parser (`exe_change_policy` `0x8940`), control algorithms (`algorithm_thread` `0xb580`), socket server, `main` `0xd00c` |
 | `thermal_intf` | CLI client | connects `/dev/socket/thermal_socket`, sends `argv[1..]` joined by `"%s "` (max 128 bytes) |
 | `android.hardware.thermal@2.0-service.mtk` | HIDL 2.0 passthrough | only `main` + a string ctor; registers `IThermal/V2_0` |
+| `android.hardware.thermal@2.0-impl.so` | HIDL 2.0 implementation | AOSP `ThermalHelper` with a compiled-in MTK threshold table — see [hal.md](hal.md) |
+| `thermal_hal.so` | HAL helpers | `mtk_get_temperatures()` reads `/proc/mtktz/*` |
 
 ## Threads started by `thermal_core:main`
 

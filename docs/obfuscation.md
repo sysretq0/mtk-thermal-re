@@ -22,7 +22,7 @@ else:
 an alternative path using **5** (`Variant.V5`), selected by a second
 `[policy_type]` header pattern.
 
-The map is a bijection on `0x20..0x7a` (91 values → 91 values), so the inverse is:
+The map is a bijection on `0x20..0x7a` (91 values -> 91 values), so the inverse is:
 
 ```
 c = (((p - 0x20) + (i % step) - 0x3b) mod 91) + 0x20
@@ -60,9 +60,9 @@ Mode is logged as `encrypted_policy <n>` (logcat tag `thermal_core`).
 
 ## Consequence for tuning
 
-Because mode 0 is plaintext, **you can author a policy as ordinary text as long as
-its first line is `[policy_type]`**. Re-run `mtk-thermal-re encrypt` only if you need
-to overwrite the obfuscated vendor file byte-for-byte in place.
+Because mode 0 is plaintext, a policy may be authored as ordinary text as long as
+its first line is `[policy_type]`. Re-run `mtk-thermal-re encrypt` only if the
+obfuscated vendor file must be overwritten byte-for-byte in place.
 
 ## Tool
 

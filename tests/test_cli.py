@@ -22,8 +22,7 @@ ENV = dict(os.environ, PYTHONPATH=str(SRC) + os.pathsep + os.environ.get("PYTHON
 
 
 def run(*args):
-    return subprocess.run(CLI + list(args), cwd=REPO, env=ENV,
-                          capture_output=True, text=True)
+    return subprocess.run(CLI + list(args), cwd=REPO, env=ENV, capture_output=True, text=True)
 
 
 class CliTests(unittest.TestCase):
@@ -34,8 +33,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("GPL-3.0-or-later", r.stdout)
 
     def test_detect(self):
-        r = run("detect", str(DATA / "sample_obfuscated.conf"),
-                str(DATA / "sample_plaintext.conf"))
+        r = run("detect", str(DATA / "sample_obfuscated.conf"), str(DATA / "sample_plaintext.conf"))
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("sample_obfuscated.conf: v10", r.stdout)
         self.assertIn("sample_plaintext.conf: plaintext", r.stdout)
@@ -43,8 +41,7 @@ class CliTests(unittest.TestCase):
     def test_decrypt_outputs_plaintext(self):
         r = run("decrypt", str(DATA / "sample_obfuscated.conf"))
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertEqual(r.stdout,
-                         (DATA / "sample_plaintext.conf").read_text())
+        self.assertEqual(r.stdout, (DATA / "sample_plaintext.conf").read_text())
 
     def test_encrypt_roundtrip(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -54,8 +51,7 @@ class CliTests(unittest.TestCase):
             self.assertEqual(r.returncode, 0, r.stderr)
             r = run("decrypt", str(enc), str(dec))
             self.assertEqual(r.returncode, 0, r.stderr)
-            self.assertEqual(dec.read_text(),
-                             (DATA / "sample_plaintext.conf").read_text())
+            self.assertEqual(dec.read_text(), (DATA / "sample_plaintext.conf").read_text())
 
     def test_show(self):
         r = run("show", str(DATA / "sample_obfuscated.conf"))
@@ -64,8 +60,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("target_tpcb= 46000", r.stdout)
 
     def test_get(self):
-        r = run("get", str(DATA / "sample_obfuscated.conf"),
-                "mtk-skin-control", "sensor")
+        r = run("get", str(DATA / "sample_obfuscated.conf"), "mtk-skin-control", "sensor")
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertEqual(r.stdout.strip(), "ap_ntc")
 

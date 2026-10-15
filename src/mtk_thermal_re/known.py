@@ -30,10 +30,10 @@ SECTIONS: dict[str, SectionInfo] = {
         parser="(loader exe_change_policy)",
         vma="0x8940",
         summary="Policy metadata; also the marker the loader uses to detect the "
-                "on-disk encoding.  MUST be the first section.",
+        "on-disk encoding.  MUST be the first section.",
         keys={
             "permanent": "Yes/No - persist this policy across reboot "
-                         "(writes /data/vendor/thermal/.permanent_tp)",
+            "(writes /data/vendor/thermal/.permanent_tp)",
         },
     ),
     "LTF": SectionInfo(
@@ -50,17 +50,16 @@ SECTIONS: dict[str, SectionInfo] = {
         name="LTF-disable-throttling",
         parser="disable_throttling_parser",
         vma="0x104cc",
-        summary="Controls HW reboot protection / SW shutdown.  'disabled' calls "
-                "set_hw_reboot(0).",
+        summary="Controls HW reboot protection / SW shutdown.  'disabled' calls set_hw_reboot(0).",
         keys={"HW_protection": "enabled/disabled"},
     ),
     "mtk-skin-control": SectionInfo(
         name="mtk-skin-control",
         parser="skin_control_parser",
         vma="0x153f0",
-        summary="Adaptive Thermal Control (ATC) brain.  target_tpcb is written to "
-                "/sys/kernel/thermal/target_tpcb; set_ttj() writes "
-                "/sys/kernel/thermal/ttj.",
+        summary="Adaptive Thermal Control (ATC) controller.  target_tpcb is written to "
+        "/sys/kernel/thermal/target_tpcb; set_ttj() writes "
+        "/sys/kernel/thermal/ttj.",
         keys={
             "sensor": "temperature sensor name, e.g. ap_ntc",
             "max_target_tj": "max junction target (millidegC)",
@@ -80,7 +79,7 @@ SECTIONS: dict[str, SectionInfo] = {
         parser="charger_cooler_parser",
         vma="0x18454",
         summary="Charge-current limiting by temperature.  Writes "
-                "/sys/kernel/charger_cooler/charger_table.",
+        "/sys/kernel/charger_cooler/charger_table.",
         keys={
             "mode": "enabled/disabled",
             "sensor": "temperature sensor name",
@@ -175,8 +174,11 @@ SECTIONS: dict[str, SectionInfo] = {
         parser="mutt_pa1_cooler_parser",
         vma="0x1c8cc",
         summary="Modem PA1 power back-off.",
-        keys={"threshold": "[temp, ...]", "hysteresis": "[degC, ...]",
-              "limit-state": "[state, ...]"},
+        keys={
+            "threshold": "[temp, ...]",
+            "hysteresis": "[degC, ...]",
+            "limit-state": "[state, ...]",
+        },
     ),
     "mutt-pa2-cooler": SectionInfo(
         name="mutt-pa2-cooler",
@@ -209,25 +211,35 @@ SECTIONS: dict[str, SectionInfo] = {
         summary="Flashlight current limiting.",
     ),
     "aee_dump": SectionInfo(
-        name="aee_dump", parser="aee_dump_parser", vma="0x12540",
+        name="aee_dump",
+        parser="aee_dump_parser",
+        vma="0x12540",
         summary="AEE crash-dump trigger.",
     ),
     "log_dump": SectionInfo(
-        name="log_dump", parser="log_dump_parser", vma="0x13100",
+        name="log_dump",
+        parser="log_dump_parser",
+        vma="0x13100",
         summary="Diagnostic log trigger.",
     ),
     "tz_polling": SectionInfo(
-        name="tz_polling", parser="tz_polling_parser", vma="0x14830",
+        name="tz_polling",
+        parser="tz_polling_parser",
+        vma="0x14830",
         summary="Extra thermal-zone polling.",
     ),
     "hinge_sensor": SectionInfo(
-        name="hinge_sensor", parser="(main)", vma="0xd00c",
+        name="hinge_sensor",
+        parser="(main)",
+        vma="0xd00c",
         summary="Hinge angle sensor configuration.",
     ),
     "option_setting": SectionInfo(
-        name="option_setting", parser="(main)", vma="0xd00c",
+        name="option_setting",
+        parser="(main)",
+        vma="0xd00c",
         summary="Only in thermal_options.conf: chooses default policy and the "
-                "enabled sub-policy set per device type.",
+        "enabled sub-policy set per device type.",
         keys={
             "default": "default policy filename",
             "policy": "[policy_filename, ...] enabled sub-policies",

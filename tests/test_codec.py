@@ -63,21 +63,21 @@ class RoundTripTests(unittest.TestCase):
             raw = (DATA / name).read_bytes()
             for variant in (Variant.V10, Variant.V5):
                 self.assertEqual(
-                    codec.encrypt(codec.decrypt(raw, variant), variant), raw,
+                    codec.encrypt(codec.decrypt(raw, variant), variant),
+                    raw,
                     "%s / %s" % (name, variant),
                 )
 
     def test_every_printable_byte_at_every_column(self):
         for variant in (Variant.V10, Variant.V5):
-            for col in range(30):
+            for _col in range(30):
                 line = bytes(range(0x20, 0x7B))  # one line, columns 0..90
                 enc = codec.encrypt(line, variant)
                 self.assertEqual(codec.decrypt(enc, variant), line)
 
     def test_variant_shapes_differ(self):
         line = b"[policy_type]"
-        self.assertNotEqual(codec.encrypt(line, Variant.V10),
-                            codec.encrypt(line, Variant.V5))
+        self.assertNotEqual(codec.encrypt(line, Variant.V10), codec.encrypt(line, Variant.V5))
 
 
 if __name__ == "__main__":

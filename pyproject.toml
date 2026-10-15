@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mtk-thermal-re"
-description = "Reverse-engineering and tuning toolkit for MediaTek thermal_core policies"
+description = "Reverse-engineering and tuning toolkit for MediaTek thermal_core and the thermal HAL"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "GPL-3.0-or-later"
@@ -60,7 +60,9 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "C4"]
-ignore = ["E501"]
+# %-formatting is used deliberately throughout for py3.9 compatibility and
+# compact log/error strings; the project does not require f-strings.
+ignore = ["E501", "UP031"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["mtk_thermal_re"]

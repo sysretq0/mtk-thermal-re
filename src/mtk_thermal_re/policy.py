@@ -27,8 +27,8 @@ reformat the rest of the file.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterator
 from dataclasses import dataclass, field
-from typing import Iterator
 
 __all__ = ["Policy", "Section", "ParseError"]
 
@@ -60,10 +60,10 @@ def parse_list(value: str) -> list[str]:
 class Section:
     """A view over one ``[name]`` block of a :class:`Policy`."""
 
-    policy: "Policy"
+    policy: Policy
     name: str
     start: int  # index of the '[' header line
-    end: int    # index one past the last body line
+    end: int  # index one past the last body line
 
     # -- lookups ---------------------------------------------------------
     def _iter_options(self) -> Iterator[tuple[int, str, str]]:
@@ -120,12 +120,13 @@ class Policy:
 
     # -- construction ----------------------------------------------------
     @classmethod
-    def parse(cls, text: str | bytes) -> "Policy":
+    def parse(cls, text: str | bytes) -> Policy:
         if isinstance(text, bytes):
             text = text.decode("utf-8", "surrogateescape")
         trailing = text.endswith("\n")
-        return cls(lines=text.split("\n")[:-1] if trailing else text.split("\n"),
-                   trailing_newline=trailing)
+        return cls(
+            lines=text.split("\n")[:-1] if trailing else text.split("\n"), trailing_newline=trailing
+        )
 
     def dumps(self) -> str:
         text = "\n".join(self.lines)
@@ -197,5 +198,4 @@ class Policy:
         self.lines.insert(insert_at, "%s= %s" % (key, value))
 
     def as_dict(self) -> dict[str, dict[str, str]]:
-        return {name: self.require_section(name).as_dict()
-                for name, _, _ in self._bounds()}
+        return {name: self.require_section(name).as_dict() for name, _, _ in self._bounds()}

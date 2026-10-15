@@ -142,8 +142,5 @@ def decode_auto(data: bytes) -> tuple[bytes, Variant]:
     """
     variant = detect(data)
     if variant is None:
-        raise DecodeError(
-            "not a thermal policy: first line does not resolve to %r"
-            % (FIRST_LINE,)
-        )
+        raise DecodeError("not a thermal policy: first line does not resolve to %r" % (FIRST_LINE,))
     return decrypt(data, variant), variant

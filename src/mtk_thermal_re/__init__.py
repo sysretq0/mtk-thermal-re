@@ -14,8 +14,8 @@ Public API::
 
 from __future__ import annotations
 
-from .__about__ import __license__, __summary__, __title__, __version__
 from . import codec, known, policy
+from .__about__ import __license__, __summary__, __title__, __version__
 from .codec import Variant
 from .policy import Policy, Section
 

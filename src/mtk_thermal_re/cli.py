@@ -9,16 +9,19 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __about__, codec, known
+from . import __about__, codec, hal, known
 from .codec import DecodeError, Variant
 from .policy import Policy
 
 __all__ = ["main", "build_parser"]
 
 _VARIANTS = {
-    "plaintext": Variant.PLAINTEXT, "0": Variant.PLAINTEXT,
-    "v10": Variant.V10, "10": Variant.V10,
-    "v5": Variant.V5, "5": Variant.V5,
+    "plaintext": Variant.PLAINTEXT,
+    "0": Variant.PLAINTEXT,
+    "v10": Variant.V10,
+    "10": Variant.V10,
+    "v5": Variant.V5,
+    "5": Variant.V5,
 }
 
 
@@ -52,6 +55,7 @@ def _load(path: str) -> tuple[Policy, Variant]:
 
 
 # --------------------------------------------------------------------------- commands
+
 
 def cmd_detect(args) -> int:
     rc = 0
@@ -191,20 +195,97 @@ def cmd_schema(args) -> int:
 
 
 def cmd_version(args) -> int:
-    print("%s %s (%s)" % (__about__.__title__, __about__.__version__,
-                          __about__.__license__))
+    print("%s %s (%s)" % (__about__.__title__, __about__.__version__, __about__.__license__))
+    return 0
+
+
+# --------------------------------------------------------------------------- HAL
+
+
+def _parse_set(items) -> dict[str, tuple[float, ...]]:
+    changes: dict[str, tuple[float, ...]] = {}
+    for item in items or []:
+        if "=" not in item:
+            raise hal.HalError("--set expects TYPE=v1,v2,v3,v4, got %r" % item)
+        name, _, raw = item.partition("=")
+        try:
+            values = tuple(float(x) for x in raw.replace(";", ",").split(","))
+        except ValueError as exc:
+            raise hal.HalError("--set %s: bad number list %r" % (name, raw)) from exc
+        changes[name.strip().upper()] = values
+    return changes
+
+
+def cmd_hal_info(args) -> int:
+    data = _read_bytes(args.file)
+    try:
+        report = hal.format_report(data)
+    except hal.HalError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 1
+    if args.json:
+        import json
+
+        payload = {
+            "build_id": hal.elf_build_id(data),
+            "size": len(data),
+            "reference": not hal.verify_defaults(data),
+            "thresholds": {k: list(v) for k, v in hal.read_thresholds(data).items()},
+        }
+        print(json.dumps(payload, indent=2))
+    else:
+        print("# %s" % args.file)
+        print(report)
+    return 0
+
+
+def cmd_hal_patch(args) -> int:
+    data = _read_bytes(args.input)
+    try:
+        changes = dict(_parse_set(args.set))
+        if args.profile:
+            if args.profile not in hal.PROFILES:
+                print(
+                    "error: unknown profile %r (have: %s)"
+                    % (args.profile, ", ".join(sorted(hal.PROFILES))),
+                    file=sys.stderr,
+                )
+                return 2
+            changes = {**hal.PROFILES[args.profile], **changes}
+        if args.add is not None:
+            types = [
+                t.strip().upper() for t in (args.types or "CPU,GPU,NPU").split(",") if t.strip()
+            ]
+            current = hal.read_thresholds(data)
+            for name in types:
+                if name not in current:
+                    raise hal.HalError("unknown temperature type %r" % name)
+                s3, s4, s5, s6 = current[name]
+                changes[name] = (s3 + args.add, s4 + args.add, s5 + args.add, s6)
+        if not changes:
+            print("error: give --set, --add or --profile", file=sys.stderr)
+            return 2
+        out = hal.apply_thresholds(data, changes, strict=not args.force)
+    except hal.HalError as exc:
+        print("error: %s" % exc, file=sys.stderr)
+        return 1
+    _write_bytes(args.output, out)
+    changed = sorted(changes)
+    print("patched %s -> %s (%s)" % (args.input, args.output, ", ".join(changed)))
+    if args.output != "-":
+        print(hal.format_report(out))
     return 0
 
 
 # --------------------------------------------------------------------------- parser
+
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="mtk-thermal-re",
         description="Decode, inspect and tune MediaTek thermal_core policy files.",
     )
-    p.add_argument("--version", action="version",
-                   version="%(prog)s " + __about__.__version__)
+    p.add_argument("--version", action="version", version="%(prog)s " + __about__.__version__)
     sub = p.add_subparsers(dest="command", required=True)
 
     sp = sub.add_parser("detect", help="report the on-disk variant of each file")
@@ -225,8 +306,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("show", help="decode and pretty-print a policy")
     sp.add_argument("file")
-    sp.add_argument("-v", "--verbose", action="store_true",
-                    help="annotate keys with descriptions")
+    sp.add_argument("-v", "--verbose", action="store_true", help="annotate keys with descriptions")
     sp.set_defaults(func=cmd_show)
 
     sp = sub.add_parser("sections", help="list sections and the parser that handles them")
@@ -257,6 +337,30 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("version", help="print version and license")
     sp.set_defaults(func=cmd_version)
+
+    sp = sub.add_parser("hal-info", help="decode the thresholds of a thermal HAL .so")
+    sp.add_argument("file")
+    sp.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    sp.set_defaults(func=cmd_hal_info)
+
+    sp = sub.add_parser("hal-patch", help="rewrite the thresholds of a thermal HAL .so")
+    sp.add_argument("input")
+    sp.add_argument("output")
+    sp.add_argument(
+        "--set",
+        action="append",
+        metavar="TYPE=v3,v4,v5,v6",
+        help="set one type's thresholds (repeatable)",
+    )
+    sp.add_argument(
+        "--add", type=float, metavar="DELTA", help="raise the selected types by DELTA degrees"
+    )
+    sp.add_argument("--types", help="comma list for --add (default CPU,GPU,NPU)")
+    sp.add_argument("--profile", choices=sorted(hal.PROFILES), help="start from a built-in profile")
+    sp.add_argument(
+        "--force", action="store_true", help="patch even if the image is not the reference build"
+    )
+    sp.set_defaults(func=cmd_hal_patch)
     return p
 
 
@@ -265,7 +369,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         return args.func(args)
-    except DecodeError as exc:
+    except (DecodeError, hal.HalError) as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 1
     except FileNotFoundError as exc:

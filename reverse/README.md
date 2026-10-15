@@ -10,6 +10,7 @@ symbols.csv       170 functions recovered from the binaries' .gnu_debugdata
                   (columns: binary,address,address_hex,size,type,name)
 decompiled/       Ghidra C for the key functions, one file per function,
                   named <symbol>.<file-vma>.c
+hal/              the same for the thermal HAL .so (see hal/README.md)
 scripts/          the PyGhidra harness used to produce decompiled/
 ```
 
@@ -19,7 +20,7 @@ All addresses in `symbols.csv`, `decompiled/*.c` filenames and the documentation
 are **file VMAs inside the stripped binary** (`.text` starts at `0x8000`).
 
 Ghidra loads these PIE binaries at an image base of `0x100000`, so inside Ghidra
-the same function appears at `image_base + vma` (e.g. `0x103fc` → `0x1103fc`).
+the same function appears at `image_base + vma` (e.g. `0x103fc` -> `0x1103fc`).
 Convert with `ghidra_address - 0x100000`.
 
 ## Regenerating the decompilation
@@ -36,7 +37,7 @@ Requires `pyghidra` and the target binaries (not distributed here — see
     ...
 ```
 
-Two gotchas baked into the harness:
+Two implementation notes, both handled by the harness:
 
 * `pyghidra.start()` must run **before** any `ghidra.*` import.
 * Pass file VMAs; the script adds the image base internally.

@@ -31,9 +31,9 @@ The recovered symbol names are the backbone of the analysis. The full table
 [`reverse/symbols.csv`](../reverse/symbols.csv) with the columns
 `binary,address,address_hex,size,type,name`.
 
-> Note: `.gnu_debugdata` supplies **function names and addresses**, not types,
-> locals or line numbers. Structure layouts below were inferred from decompiled
-> code and call sites, not from DWARF.
+> Note: `.gnu_debugdata` supplies function names and addresses, but not types,
+> locals or line numbers. The structure layouts below were inferred from
+> decompiled code and call sites, not from DWARF.
 
 ## Step 2 — decompile with Ghidra
 
@@ -45,7 +45,7 @@ Functions were decompiled with Ghidra via PyGhidra. The harness used is kept in
     /path/to/thermal_core 0x103fc:tp_decrypt_v1 0x8940:exe_change_policy ...
 ```
 
-Two practical notes:
+Two implementation notes:
 
 * `pyghidra.start()` must be called **before** importing any `ghidra.*` module.
 * Ghidra images this binary at a base of `0x100000`, so a file VMA of `0x8000`
@@ -74,8 +74,8 @@ for each line:
 ```
 
 with `step` being a parameter (10 on the shipped path, 5 on an alternate path).
-Because the map is a bijection on `0x20..0x7a`, the transform is trivially
-invertible — this is obfuscation, not cryptography. See
+Because the map is a bijection on `0x20..0x7a`, the transform is readily
+invertible. This is obfuscation, not cryptography. See
 [`obfuscation.md`](obfuscation.md).
 
 Validation was by round-trip: every shipped file decrypts to readable INI text and
@@ -141,7 +141,7 @@ with `mtk-thermal-re schema`. Parser addresses are listed in
 
 ## Open questions
 
-These were not exhaustively reconstructed and are flagged honestly:
+The following were not exhaustively reconstructed and remain open:
 
 * the exact `[option_setting]`/`angle` device-type matching used by
   `thermal_options.conf`;
