@@ -12,11 +12,12 @@ were reached so they can be independently reproduced.
 | `thermal_core` | arm64 ELF, stripped, PIE | thermal daemon: parser + algorithms + control |
 | `thermal_intf` | arm64 ELF, stripped | CLI client for the daemon socket |
 | `android.hardware.thermal@2.0-service.mtk` | arm64 ELF, stripped | thin HIDL 2.0 passthrough |
+| `android.hardware.thermal@2.0-impl.so` | arm64 ELF, stripped | HIDL 2.0 implementation; compiled-in threshold table (see [hal.md](hal.md)) |
 | `thermal/*.conf` | obfuscated text | shipped policies |
 
 ## Step 1 — recover symbols from `.gnu_debugdata`
 
-All three binaries carry an embedded `.gnu_debugdata` section: a mini
+The binaries carry an embedded `.gnu_debugdata` section: a mini
 symbol table stored as a **XZ-compressed ELF**. Unpacking it restores the full
 function symbol list that was stripped from the main file.
 
@@ -134,6 +135,7 @@ with `mtk-thermal-re schema`. Parser addresses are listed in
 |---|---|
 | `reverse/symbols.csv` | 170 recovered symbols (`binary,address,address_hex,size,type,name`) |
 | `reverse/decompiled/*.c` | Ghidra C for 13 key functions |
+| `reverse/hal/` | HAL symbols (`impl20.symbols.tsv`) and the decompiled threshold/data-path functions |
 | `reverse/scripts/decompile.py` | the PyGhidra harness used to produce them |
 | `data/samples/` | the 9 original obfuscated policies (inputs) |
 | `data/policies/` | their verified plaintext decodes (outputs) |
