@@ -1,0 +1,55 @@
+mtk-thermal-re
+Copyright (C) 2026 The mtk-thermal-re Authors
+SPDX-License-Identifier: GPL-3.0-or-later
+
+This product is licensed under the GNU General Public License, version 3 or
+later.  The full license text is in the file LICENSE.
+
+--------------------------------------------------------------------------------
+Third-party and vendor material
+--------------------------------------------------------------------------------
+
+1. Vendor binaries and firmware.
+
+   No MediaTek binaries are distributed with this project.  The daemon,
+   client and HAL service analysed during development (`thermal_core`,
+   `thermal_intf`, `android.hardware.thermal@2.0-service.mtk`) are proprietary
+   works of MediaTek Inc. and/or the device vendor.  They remain the property
+   of their respective owners and are NOT covered by this project's license.
+   Users must obtain them, and any rights to use them, from the device or its
+   vendor.
+
+2. Vendor thermal policies.
+
+   The files under `data/samples/` are the original on-disk policy files as
+   shipped on the analysed device, and `data/policies/` are decoded
+   transformations of them.  They are included solely as test fixtures and
+   research evidence for interoperability.  They are vendor configuration
+   data, not part of this project's copyrightable source, and are likewise not
+   relicensed by this project.
+
+   If you are a rights holder and want a fixture removed, open an issue.
+
+3. Decompiled output.
+
+   The C listings under `reverse/decompiled/` are mechanically produced from the
+   vendor binaries for the purposes of security research, interoperability and
+   documentation.  They are provided as analysis evidence.  They are not
+   authored source code of this project and carry no warranty.
+
+4. Python standard library only.
+
+   The installable package (`src/mtk_thermal_re/`) has no third-party runtime
+   dependencies.  Optional development and reverse-engineering extras
+   (`pytest`, `ruff`, `build`, `pyghidra`) are separate works under their own
+   licenses and are not redistributed here.
+
+--------------------------------------------------------------------------------
+Corresponding Source
+--------------------------------------------------------------------------------
+
+Under the GPL, the Corresponding Source for this work is the contents of this
+repository.  If you convey a modified version, you must keep the same license,
+mark the changes, and make the source available to recipients.
+
+There is NO WARRANTY for this program, to the extent permitted by law.

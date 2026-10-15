@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mtk-thermal-re"
+description = "Reverse-engineering and tuning toolkit for MediaTek thermal_core policies"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [{ name = "The mtk-thermal-re Authors" }]
+keywords = ["android", "mediatek", "mtk", "thermal", "reverse-engineering", "tuning"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Software Development :: Disassemblers",
+  "Topic :: System :: Hardware",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://example.invalid/mtk-thermal-re"
+Source = "https://example.invalid/mtk-thermal-re"
+
+[project.scripts]
+mtk-thermal-re = "mtk_thermal_re.cli:main"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "ruff>=0.6",
+  "build>=1.2",
+]
+# Reproducing the reverse-engineering pass (see reverse/scripts/).
+reverse = ["pyghidra>=3"]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.dynamic]
+version = { attr = "mtk_thermal_re.__about__.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["mtk_thermal_re"]
