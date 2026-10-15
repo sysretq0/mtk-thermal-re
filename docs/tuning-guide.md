@@ -108,9 +108,24 @@ gpu_min_throttle_freq= 300000
 
 ### Reference examples
 
-`examples/thermal_cool.conf` and `examples/thermal_performant.conf` are complete,
-validated policies with `.conf.enc` obfuscated twins. Diff them against the
-decoded stock policy to see exactly what moves.
+All under `examples/`, each with a `.conf.enc` obfuscated twin:
+
+| profile | change | notes |
+|---|---|---|
+| `sysretq0_hot.conf` | **+5.0 °C** on `target_tpcb`/`trip_tpcb`/`min_target_tj`, `severe` +5 °C | runs **hot** but pinned to the vendor's own hottest shipped values; hard rails untouched |
+| `thermal_performant.conf` | `target_tpcb`/`trip_tpcb` +7 °C, HAL raised | more headroom, runs hottest of the three |
+| `thermal_cool.conf` | targets lowered, HAL lowered | trade performance for lower temperatures |
+
+`sysretq0_hot` is also provided obfuscated and named for direct placement at
+`/vendor/etc/thermal/thermal.conf` as `examples/vendor/thermal.conf`. See
+[`../examples/vendor/README.md`](../examples/vendor/README.md).
+
+The `sysretq0_hot` profile is deliberately bounded by the vendor's **own** hottest
+policy: `thermal_policy_08.conf` / `thermal_mtbf.conf` ship
+`target_tpcb=51000`, `trip_tpcb=48000`, `min_target_tj=60000`, `severe=52000`.
+The profile uses exactly those values (never more), and leaves `max_target_tj=85000`,
+the 80.0 °C HAL shutdown, the charger-current bands and the backlight limits
+unchanged. `tests/test_examples.py` enforces all of this.
 
 ## Live toggles (no file editing)
 

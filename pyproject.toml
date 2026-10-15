@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
-authors = [{ name = "The mtk-thermal-re Authors" }]
+authors = [{ name = "sysretq0" }]
 keywords = ["android", "mediatek", "mtk", "thermal", "reverse-engineering", "tuning"]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -24,8 +24,10 @@ classifiers = [
 dynamic = ["version"]
 
 [project.urls]
-Homepage = "https://example.invalid/mtk-thermal-re"
-Source = "https://example.invalid/mtk-thermal-re"
+Homepage = "https://github.com/sysretq0/mtk-thermal-re"
+Source = "https://github.com/sysretq0/mtk-thermal-re"
+Issues = "https://github.com/sysretq0/mtk-thermal-re/issues"
+Releases = "https://github.com/sysretq0/mtk-thermal-re/releases"
 
 [project.scripts]
 mtk-thermal-re = "mtk_thermal_re.cli:main"

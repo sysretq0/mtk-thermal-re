@@ -8,6 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-15
+
+### Added
+
+- **sysretq0 HOT profile** (`examples/sysretq0_hot.conf`): runs the device
+  hotter by raising the throttle targets a uniform **+5.0 °C** — anchored to the
+  vendor's own hottest shipped values (`thermal_policy_08` / `thermal_mtbf`) so
+  it never leaves the safe envelope. Keeps `max_target_tj=85000`, the 80.0 °C HAL
+  shutdown, charge-current and backlight limits, and HW protection unchanged.
+- Obfuscated twin `examples/sysretq0_hot.conf.enc` and a `/vendor`-ready drop-in
+  named `examples/vendor/thermal.conf` (V10, byte-identical to the `.enc`), with
+  placement/backup/rollback instructions in `examples/vendor/README.md`.
+- `tests/test_examples.py`: locks example round-trips and the HOT profile's
+  safe-envelope contract (hotter than stock, never beyond the vendor ceiling).
+
+### Changed
+
+- Project maintainer/author branding is now **sysretq0**.
+
 ## [1.0.0] - 2026-10-15
 
 Initial release: the full reverse-engineering result plus a packaged toolkit.
@@ -47,5 +66,6 @@ Initial release: the full reverse-engineering result plus a packaged toolkit.
   `.current_tp` / `.permanent_tp` persistence.
 - Socket command set: `apply`, `mtbf_mode`, `md_off`, `debug_log`, `frs`.
 
-[Unreleased]: https://example.invalid/mtk-thermal-re/compare/v1.0.0...HEAD
-[1.0.0]: https://example.invalid/mtk-thermal-re/releases/tag/v1.0.0
+[Unreleased]: https://github.com/sysretq0/mtk-thermal-re/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/sysretq0/mtk-thermal-re/releases/tag/v1.1.0
+[1.0.0]: https://github.com/sysretq0/mtk-thermal-re/releases/tag/v1.0.0

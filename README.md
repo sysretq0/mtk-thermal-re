@@ -2,6 +2,8 @@
 # mtk-thermal-re
 
 > Reverse-engineering and tuning toolkit for MediaTek `thermal_core` thermal policies.
+>
+> **Maintained by [sysretq0](https://github.com/sysretq0).**
 
 `thermal_core` is MediaTek's Android thermal daemon. It reads INI-like "policy"
 files (`thermal.conf`, `thermal_policy_XX.conf`, `thermal_mtbf.conf`, …), but the
@@ -23,6 +25,33 @@ recorded in `docs/` and `reverse/`.
 - 🔌 Documents the `/dev/socket/thermal_socket` command interface (`apply`, `mtbf_mode`, …)
 - 📦 Plaintext policy overlay for `/data/vendor/thermal/` — no re-obfuscation required
 - 🧪 Stdlib-only test suite (no third-party runtime dependencies)
+
+## Thermal profiles
+
+A ready-to-use **sysretq0** profile is included: `sysretq0_hot` runs the device
+hotter than stock (a uniform **+5.0 °C** on the throttle targets) while staying
+inside the vendor's own safe envelope — it uses the vendor's hottest shipped
+values (`thermal_policy_08` / `thermal_mtbf`) and never moves the hard rails
+(85.0 °C junction clamp, 80.0 °C HAL shutdown, charge-current and backlight
+limits, HW protection all unchanged).
+
+| file | encoding | use |
+|---|---|---|
+| [`examples/sysretq0_hot.conf`](examples/sysretq0_hot.conf) | plaintext | read/edit, overlay into `/data/vendor/thermal/` |
+| [`examples/sysretq0_hot.conf.enc`](examples/sysretq0_hot.conf.enc) | V10 | obfuscated twin |
+| [`examples/vendor/thermal.conf`](examples/vendor/thermal.conf) | V10 | **drop-in for `/vendor/etc/thermal/thermal.conf`** |
+
+```sh
+# verify then push to /vendor (root; back up the original first):
+mtk-thermal-re decrypt examples/vendor/thermal.conf
+adb push examples/vendor/thermal.conf /data/local/tmp/thermal.conf
+adb shell su -c 'mount -o rw,remount /vendor'
+adb shell su -c 'cp /data/local/tmp/thermal.conf /vendor/etc/thermal/thermal.conf'
+adb shell su -c 'thermal_intf apply thermal.conf'
+```
+
+See [`examples/vendor/README.md`](examples/vendor/README.md) for backup, rollback
+and the safer `/data/vendor/thermal/` overlay path.
 
 ## Installation
 
